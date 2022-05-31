@@ -1,0 +1,58 @@
+Q 1 -What are some new things happening in the web?
+A - Blockchain Technology , Internet of Things (IoT) , Voice Search Optimization , Motion UI , Data Security , Multi-experience , Cybersecurity , Virtual Reality , Serverless Architecture , Cloud Computing , Responsive Websites , Dark Mode
+Q 2 -Explain a project that you have built?
+A -  It was an  e-commerce website, which is a Clone of Skinstore.
+         Features- 
+Social sign in / sign up
+Sorting by brand or by price
+Shopping Cart 
+E-Payment
+Mobile Compatibility.
+
+       It took 5 days to complete this project. There were 6 members in the team. My role was                        to build  a Home page. 
+Along with it, I found 2 teammates were not active to build the project. Because of which I had a lot of  work  pressure to finish Navbar as well,arranging zoom meetings, taking follow ups and guiding the entire team
+
+  Tech Stack - HTML | CSS | JavaScript | Bootstrap  
+ 
+        The challenging part for me was to link home with the product page. To overcome this I took help from youtube and from my teammates. And at last I completed it.
+
+            During this project I learnt to link the home page with product page and responsiveness. I learnt, taking follow ups and leading the team, coordination.  
+Q 3 -Whats something exciting that you have built?
+A - I have built to . That is very good. And working good
+Q 4 - What are you most excited about?
+A - I am most excited about meeting big goals. I am just that type of a person–I like to have goals to follow, ideally big ambitious goals. Who would not want to put a dent to the Universe after all, leaving some mark on this planet? Working for your company–if I get a chance to work here–I will work on products and applications billions of people use every day. It is beyond exciting to me, just to imagine the impact I could have in this job. Before it can happen, however, I have to succeed in this interview with you, and I am sure it won’t be easy….
+
+Q 5 -Why do coding standards matter? What are some patterns you follow?
+A - Coding standards help in the development of software programs that are less complex and thereby reduce the errors. If programming standards in software engineering are followed, the code is consistent and can be easily maintained. This is because anyone can understand it and can modify it at any point in time. 
+My coding standards are - 
+Code Comments and Proper Documentation
+Use of Indentation
+Avoid Commenting on Obvious Things
+Grouping Code
+Proper and Consistent Scheme for Naming
+Deep nesting structure should be avoided
+Proper organization of files and folder
+Open source code readability
+Refactoring of code
+Q 6 -How do you go about managing responsive websites?
+A - 
+Focus On The Content.
+Get To Know The Media Query.
+Keep A “Mobile First” Mentality. 
+Create A Flexible Foundation. 
+Don't Neglect The Navigation.
+Optimize Your Assets. 
+Make Your Website “Touch-Friendly” 
+Pick The Right Content Management System (CMS)
+
+Q 7 -What do you care about the most when you write software?
+A - 
+Use Meaningful Names.
+Single Responsibility Principle (SRP) 
+Avoid Writing Unnecessary Comments. 
+Write Readable Code For People. 
+Write Unit Tests. 
+Be Careful With Dependencies. 
+Make Your Project Well Organized.
+
+
