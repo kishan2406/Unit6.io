@@ -1,0 +1,288 @@
+1- Explain in brief what is node js?
+More details  - https://www.tutorialspoint.com/nodejs/nodejs_introduction.htm)
+A -Node.js is a server-side platform built on Google Chrome's JavaScript Engine (V8 Engine). Node.js was developed by Ryan Dahl in 2009.
+It is an open source, cross-platform runtime environment for developing server-side and networking applications. Node.js applications are written in JavaScript and runs on OS X, Microsoft Windows, and Linux.
+It also provides a rich library of various JavaScript modules.
+It is useful for developing applications that require a persistent connection from the browser to the server and is often used for real-time applications such as chat, news feeds and web push notifications.
+2- How is node js non-blocking?
+           A - A non-blocking call in JavaScript provides a callback function that is  called when the operation is complete. Node. js internally uses operating system level polling —->
+in combination with worker threads—> for operations that do not support polling. Node then translates these mechanisms into JavaScript callbacks.
+Polling -It is a technique for check the fresh data over a given interval by periodically making API requests to a server
+Worker thread - A worker is an object created using a constructor(The purpose of a constructor is to create a new object ) (e.g. Worker() ) that runs a named JavaScript file
+3- What is throughput?
+A - In communication networks, network throughput  is the rate of successful message delivery over a communication channel, 
+such as Ethernet or packet radio.  these messages have delivered over a physical or logical link, or it can pass through a certain network node. Throughput is usually measured in bits per second (bit/s or bps), and sometimes in data packets per second (p/s or pps) or data packets per time slot.
+
+4- How is Node js having high IO throughput?
+A - Node.js is asynchronous and single-threaded. This means that all I/O operations don’t block any other operations. It also means that you can send emails, read files, query the database, etc. all at the same time.Each request to the web-server won’t create a separate Node.js process. Although, one Node.js process would run at all times which would listen to the connections. JavaScript code is also executed in the process’ main thread while all other I/O operations are executed in separate threads which results in almost no delays.
+
+
+5- What are CPU intensive tasks?
+A - Compute-intensive is a term that applies to any computer application that demands a lot of computation, They are complex user actions that eat up more RAM. A few of such processes can shut down your server entirely. Naturally, you want to make sure that your app or website is 'smart' enough to handle different kinds of tasks, for each individual user request.
+6- How can you end up blocking your main thread in node.js?
+A - The whole idea behind node.js is that it does not do any heavy processing. Any heavy processing should be handled by a worker.
+You need to get back to the event loop as quickly as possible and spawn processes or use IO to do the heavy lifting.
+The actual node.js server just needs to pass messages around to all your services, not do any of those services.
+
+7- What is the event loop?
+A - 
+* Asynchronous code is executed by event loop. * System/Browser takes synchronous code and put them as tasks. then these tasks are put them into queue. * The Event Loop has one simple job — to monitor is there any task to handle. Its consists of Call Stack, Task Queue and Web API.
+8- What are different phases in event loop?
+A - The Event Loop contains six main phases: timers, I/O callbacks, preparation / idle phase, I/O polling, setImmediate() callbacks execution, and close events callbacks.
+The callbacks of timers in JavaScript(setTimeout, setInterval) are kept in the heap memory until they are expired. If there are any expired timers in the heap, the event loop takes the callbacks associated with them and starts executing them in the ascending order of their delay until the timers queue is empty. However, the execution of the timer callbacks is controlled by the Poll phase of the event loop (we will see that later in this article).
+Pending callbacks:
+In this phase, the event loop executes system-related callbacks if any. For example, let's say you are writing a node server and the port on which you want to run the process is being used by some other process, node will throw an error ECONNREFUSED, some of the *nix systems may want the callback to wait for execution due to some other tasks that the operating system is processing. Hence, such callbacks are pushed to the pending callbacks queue for execution.
+Idle/Prepare: In this phase, the event loop does nothing. It is idle and prepares to go to the next phase.
+Poll:
+This phase is the one which makes Node.js unique. In this phase, the event loop watches out for new async I/O callbacks. Nearly all the callbacks except the setTimeout, setInterval, setImmediate and closing callbacks are executed.
+Basically, the event loop does two things in this phase:
+Check/setImmediate: In this phase, the event loop takes the callbacks from the Check phase's queue and starts executing one by one until the queue is empty. The event loop will come to this phase when there are no callbacks remaining to be executed in the poll phase and when the poll phase becomes idle. Generally, the callbacks of setImmediate are executed in this phase.
+Closing callbacks: In this phase, the event loop executes the callbacks associated with the closing events like socket.on('close', fn) or process.exit().
+Apart from all these, there is one more microtask queue which contains callbacks associated with process.nextTick.
+
+
+9- What is process.tick?
+A - Every time the event loop takes a full trip, we call it a tick. When we pass a function to process.nextTick() , we instruct the engine to invoke this function at the end of the current operation, before the next event loop tick starts: JS copy.
+
+10- When can process.tick starve your event loop?
+A - Any time you call process.nextTick() in a given phase, all callbacks passed to process.nextTick() will be resolved before the event loop continues. This can create some bad situations because it allows you to "starve" your I/O by making recursive process.nextTick() calls, which prevents the event loop from reaching the poll phase.
+
+11- What is the difference between setTimeout and setInterval?
+A - setTimeout( function, duration) − This function calls function after duration milliseconds from now. This goes for one execution. Let’s see an example −
+It waits for 2000 milliseconds, and then runs the callback function alert(‘Hello’) −
+setTimeout(function() { alert('Hello');}, 2000);
+setInterval(function, duration) − This function calls function after every duration milliseconds. This goes for unlimited times. Let’s see an example −
+It triggers the alert(‘Hello’) after every 2000 milliseconds, not only once.
+setInterval(function() { alert('Hello');}, 2000);
+
+
+12- How can you make a network request with http module from the backend?
+A -  Node.js comes with both HTTP and HTTPS modules in the standard library. For our example, as it is a HTTPS URL we will use the HTTPS module to perform the GET call. Below is the code example:
+const https = require('https');
+ 
+https.get('https://jsonplaceholder.typicode.com/users', res => {
+  let data = [];
+  const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
+  console.log('Status Code:', res.statusCode);
+  console.log('Date in Response header:', headerDate);
+ 
+  res.on('data', chunk => {
+    data.push(chunk);
+  });
+ 
+  res.on('end', () => {
+    console.log('Response ended: ');
+    const users = JSON.parse(Buffer.concat(data).toString());
+ 
+    for(user of users) {
+      console.log(`Got user with id: ${user.id}, name: ${user.name}`);
+    }
+  });
+}).on('error', err => {
+  console.log('Error: ', err.message);
+});
+Let’s walk through the code. First, we require the https standard Node module, which is available with Node.js installation. No need for a package.json file or any npm install --save to get this running.
+We then call our JSONPlaceholder URL with the get method, which has a callback that provides the response we have put in the res variable.
+Next, we initialize data as an empty array, and after that, we log the status code and date from the respone’s header. Subsequently, whenever we get data, we push the chunk to the data array.
+Then, on the response end, we concat the array data, change it into a string, and parse the JSON to get the list of 10 users as an array of objects. Consequently, we loop through the 10 users and log the ID and name of the user object one at a time.
+One thing to note here: if there is an error on the request, the error message is logged on the console. The above code is available as a pull request for your reference.
+As HTTPS is a standard Node.js module, there’s been no need for a package.json — I wish I could say this for some of my Node.js projects.
+You can run the code simply with node native-https.js, provided you named the file native-https.js. It should show an output like below:
+
+You can use the same method to run all the other examples in this post; they will show a similar output as we print status code, date from response header, and the user ID and name from the response body.
+Next in line for exploration is the Axios npm package — for this, we will need a package.json file. Time to see how.
+
+
+13- How can you create your own events?
+A - Events can be created with the Event constructor as follows:
+const event = new Event('build');
+ 
+// Listen for the event.
+elem.addEventListener('build', function (e) { /* ... */ }, false);
+ 
+// Dispatch the event.
+elem.dispatchEvent(event);
+ 
+Copy to Clipboard
+The above code example uses the EventTarget.dispatchEvent() method.
+This constructor is supported in most modern browsers (with Internet Explorer being the exception). For a more verbose approach (which works with Internet Explorer), see the old-fashioned way below.
+Adding custom data – CustomEvent()
+To add more data to the event object, the CustomEvent interface exists and the detail property can be used to pass custom data. For example, the event could be created as follows:
+const event = new CustomEvent('build', { detail: elem.dataset.time });
+ 
+Copy to Clipboard
+This will then allow you to access the additional data in the event listener:
+function eventHandler(e) {
+  console.log('The time is: ' + e.detail);
+}
+ 
+Copy to Clipboard
+The old-fashioned way
+The older approach to creating events uses APIs inspired by Java. The following shows an example with document.createEvent():
+// Create the event.
+const event = document.createEvent('Event');
+ 
+// Define that the event name is 'build'.
+event.initEvent('build', true, true);
+ 
+// Listen for the event.
+elem.addEventListener('build', function (e) {
+  // e.target matches elem
+}, false);
+ 
+// target can be any Element or other EventTarget.
+elem.dispatchEvent(event);
+
+
+14- What are clusters?
+A - At a high level, a computer cluster is a group of two or more computers, or nodes, that run in parallel to achieve a common goal. This allows workloads consisting of a high number of individual, parallelizable tasks to be distributed among the nodes in the cluster. As a result, these tasks can leverage the combined memory and processing power of each computer to increase overall performance.
+To build a computer cluster, the individual nodes should be connected in a network to enable internode communication. Computer cluster software can then be used to join the nodes together and form a cluster. It may have a shared storage device and/or local storage on each node. Typically, at least one node is designated as the leader node, and acts as the entry point to the cluster. The leader node may be responsible for delegating incoming work to the other nodes and, if necessary, aggregating the results and returning a response to the user
+Computer clusters can generally be categorized as three types:
+Highly available or fail-over
+Load balancing
+High performance computing
+
+15- How does your Node.js application handle scale? Elaborate
+A - The easiest thing to do to scale a big application is to clone it multiple times and have each cloned instance handle part of the workload (with a load balancer, for example). This does not cost a lot in term of development time and it's highly effective. This strategy is the minimum you should do and Node.
+
+
+16- What is the difference between readFile and readFileSync?
+A - readFileSync() is synchronous and blocks execution until finished. These return their results as return values. readFile() are asynchronous and return immediately while they function in the background. You pass a callback function which gets called when they finish.
+
+17- What are CORS? How do you configure them? Why do you need them?
+A - Cross-Origin Resource Sharing (CORS) is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources. CORS also relies on a mechanism by which browsers make a "preflight" request to the server hosting the cross-origin resource, in order to check that the server will permit the actual request.For security reasons, browsers restrict cross-origin HTTP requests initiated from scripts
+ 
+Configuration:=> 
+https he IIS CORS is configured via a site or application web.config file and has its own cors configuration section within system.webServer.
+ 
+Below are the configuration examples to enable CORS for a site named contentSite. The * origin allows all host origins; however, those that start with http://* are later excluded. For the https://*.microsoft.com host origin, the CORS response is customized with various CORS configurations as an example.
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <cors enabled="true" failUnlistedOrigins="true">
+            <add origin="*" />
+            <add origin="https://*.microsoft.com"
+                 allowCredentials="true"
+                 maxAge="120"> 
+                <allowHeaders allowAllRequestedHeaders="true">
+                    <add header="header1" />
+                    <add header="header2" />
+                </allowHeaders>
+                <allowMethods>
+                     <add method="DELETE" />
+                </allowMethods>
+                <exposeHeaders>
+                    <add header="header1" />
+                    <add header="header2" />
+                </exposeHeaders>
+            </add>
+            <add origin="http://*" allowed="false" />
+        </cors>
+    </system.webServer>
+</configuration>
+
+
+18- What is rate limiting?
+           A - Rate limiting is a strategy for limiting network traffic. It puts a cap on how often someone can repeat an action within a certain timeframe
+19- How does middlewares work in express?
+A - Middleware functions are functions that have access to the request object (req), the response object (res), and the next function in the application’s request-response cycle. The next function is a function in the Express router which, when invoked, executes the middleware succeeding the current middleware.
+
+20- What is the difference between Encryption and Hashing?
+A - Since encryption is two-way, the data can be decrypted so it is readable again. Hashing,on the other hand, is one-way, meaning the plaintext is scrambled into a unique digest,through the use of a salt, that cannot be decrypted. 
+
+
+21- What is the difference between https and http?
+A - HTTPS is HTTP with encryption. The only difference between the two protocols is that HTTPS uses TLS (SSL) to encrypt normal HTTP requests and responses. As a result, HTTPS is far more secure than HTTP. A website that uses HTTP has http:// in its URL, while a website that uses HTTPS has https://
+
+22- What is TLS?
+A - TLS :=>Transport Layer Security
+TLS is a cryptographic protocol that provides end-to-end security of data sent between applications over the Internet. It is mostly familiar to users through its use in secure web browsing, and in particular the padlock icon that appears in web browsers when a secure session is established.
+
+23- What is AES?
+A - The Advanced Encryption Standard (AES) is a symmetric block cipher chosen by the U.S. government to protect classified information.
+ 
+AES is implemented in software and hardware throughout the world to encrypt sensitive data. It is essential for government computer security, cybersecurity and electronic data protection.
+ 
+
+
+24- What is JWT Token? Why do we need to use JWT? What are some pros 
+and cons?
+A - JWT : It is a definitely a clever way to securely get the identity of the client. In simple language there is a secret Key used to encrypt the JSON formatted Data which primarily includes the user-id. Now an encryption of data with the Key generates the token that is sent to the client and used in every request. Every time, the client sends in the request with the token the server tries to decrypt it with the Key, if it can, it gets the user-id from the JSON Data which corresponds to the user.
+ 
+Pros-
+1.No Database Table : This implies fewer DB queries, which implies faster response time. In case you are using paid services like DynamoDb that charge per query basis, JWT might reduce the costs marginally.
+But these can be resolved using tools like Redis in case of sessions
+Simpler to use if careful : If your architecture doesn’t user client Sessions and your security basics are clear, the development time in case of JWT is faster using the existing libraries.
+2.Used across services : You can have one authorization server that deals with the Login/Registration and generates the token, all the subsequent requests will need not have to go to the authorization server as the only the Auth-server will have have the private key, and rest of the severs will have the public-key to verify the signature.
+This is really useful in case of corporate systems where in the authorization server is in a secure environment. e.g. a user needs to be connected to the intranet to login but once done, the public servers can verify and proceed on.
+Similar setup can be used for OAuth implementation.
+3.The best part is that there is no connection between the the auth-server and the rest of the servers other than the pre-defined public key.
+ 
+ 
+Cons-
+1.Compromised Secret Key : The best and the worst thing about JWT is that it relies on just one Key. Consider that the Key is leaked by a careless or a rogue developer/administrator, the whole system is compromised!
+The attacker(who has access to the Key) can easily access all user data if he has the user-id which can be easily acquired.
+The only way to recover from this point is to generate a new Key(Key-pair) that will be used across systems here on. This would me all the existing client tokens are invalidated and each user would have to login again. Image one day 100% of Facebook users will be logged out.
+Well you might wonder, why is the same not possible if the developer/administrator leaks the Session table?
+It is possible, but it is related to the practicality of the situation. Remember, most of the online breaches are done with social engineering than complicated technical hacks.
+a) Practically it is really difficult to leak the whole table. In case of a single key, the admin just has pretend to take a photo of his friend in the office aaaaand the secret is on Reddit the next morning you fire him.
+b) As well consider the OpenSSL Heartbleed bug. It is really easy to extract the secret key from just a couple of memory dumps with a simple string match script.
+Cannot manage client from the server: We had several cases where we wanted the users at HelpTap to logout by cleaning up the cookies, but we cannot ask them to do so every time.
+As well consider the case that a user’s mobile is stolen, and he wants to logout of all existing sessions(e.g. Gmail’s logout other sessions feature). Well its not possible in case of JWT.
+In our case it used to be rogue users. We needed to log them out. Well, in case of of HelpTap it was quite easy as we just had to delete the session tokens. There was no way to do the same in case of Bottr cause we used JWT in that case.
+You might argue, why not just delete the existing user-id from the table… But doing so means to create multiple dangling pointers and no one likes dangling pointers in a No-SQL database.
+2.Cannot push Messages to clients (Identifying clients from server) : As we have no record about the logged-in clients on the DB end, we cannot push messages to all the clients.
+In HelpTap we implemented a chatting platform wherein the client polls the server for new messages. Each client has an AWS SQS queue to itself where we push any new messages. In case of JWT this would not have been possible as identifying each client per user is not possible.
+One can use the device ID but not all clients have a device ID, as well that would mean creating another table that is parallel to the Session table
+This point overlaps point 2
+3.Crypto-algo can be deprecated: JWT relies completely on the Signing algorithm. Now, though it is not frequent, but in the past many Encryption/Signing algorithms have been deprecated.
+This article shows how you can crack the Wifi password of a WEP Encrypted Wifi which was the most common type of encryption not more than a year ago. The hack was based on the weakness of the crypto algorithm. So, in case of JWT, if such a thing happens, yet again, every user on the platform will have to login again.
+Yet again one will have to wait till all the JWT libraries update with the latest crypto-algo.
+Da4.ta Overhead : The size of the JWT token will be more than that of a normal Session token. The more data you add in the JWT token, the longer it gets linearly. Remember, each request needs the token in it for request verification. So say, a 1 KB JWT token implies each request will have 1KB over-head upload which is really bad in cases of low speed net connectivity.
+In case of bad developer, some one might put more data in the JSON and that would increase the length. The length of the sessions tokens can be as small it can be and still be secure. e.g. the possible combinations for just a 5 letter alphanumeric session string is almost 1 billion combinations (62⁵)
+5.Complicated to understand: JWT uses cryptographic Signature algorithms to verify the data and get the user-id from the token. Understanding the Signing Algo in itself requires basics of cryptography. So, in case if the developer is not completely educated s/he might introduce security loopholes in the system. My co-worker was surprised when I decoded the JWT token without using the secret key. He expected that the whole token was an encrypted one.
+I came across a website that stored the whole user object in the JWT token. This included the user’s password hash.
+Sessions tokens are pretty straightforward to understand and such issues can be easily avoided.
+
+
+25- What is salting? Where do we store salt?
+A - A salt is added to the hashing process to force their uniqueness, increase their complexity without increasing user requirements, and to mitigate password attacks like hash tables
+
+26- What is the difference between authorisation and Authentication?
+A - authentication is the process of verifying who someone is, whereas authorization is the process of verifying what specific applications, files, and data a user has access to.
+
+27- What is the difference between JS on the browser and node?
+A - Both the browser and Node.js use JavaScript as their programming language.
+ 
+Building apps that run in the browser is a completely different thing than building a Node.js application.
+ 
+Despite the fact that it's always JavaScript, there are some key differences that make the experience radically different.
+ 
+From the perspective of a frontend developer who extensively uses JavaScript, Node.js apps bring with them a huge advantage: the comfort of programming everything - the frontend and the backend - in a single language.
+ 
+You have a huge opportunity because we know how hard it is to fully, deeply learn a programming language, and by using the same language to perform all your work on the web - both on the client and on the server, you're in a unique position of advantage.
+ 
+What changes is the ecosystem.
+ 
+In the browser, most of the time what you are doing is interacting with the DOM, or other Web Platform APIs like Cookies. Those do not exist in Node.js, of course. You don't have the document, window and all the other objects that are provided by the browser.
+ 
+And in the browser, we don't have all the nice APIs that Node.js provides through its modules, like the filesystem access functionality.
+ 
+Another big difference is that in Node.js you control the environment. Unless you are building an open source application that anyone can deploy anywhere, you know which version of Node.js you will run the application on. Compared to the browser environment, where you don't get the luxury to choose what browser your visitors will use, this is very convenient.
+ 
+This means that you can write all the modern ES6-7-8-9 JavaScript that your Node.js version supports.
+ 
+Since JavaScript moves so fast, but browsers can be a bit slow to upgrade, sometimes on the web you are stuck with using older JavaScript / ECMAScript releases.
+ 
+You can use Babel to transform your code to be ES5-compatible before shipping it to the browser, but in Node.js, you won't need that.
+ 
+Another difference is that Node.js supports both the CommonJS and ES module systems (since Node.js v12), while in the browser we are starting to see the ES Modules standard being implemented.
+ 
+In practice, this means that you can use both require() and import in Node.js, while you are limited to import in the browser.
+
+
+28- What is V8?
+A - V8 is Google’s open source high-performance JavaScript and WebAssembly engine, written in C++. It is used in Chrome and in Node.js, among others. 
+
+
+
